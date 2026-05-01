@@ -28,7 +28,6 @@ permissions: read-all
 jobs:
   check:
     name: Check what pkg were updated
-    if: github.repository == 'kubearmor/kubearmor'
     runs-on: ubuntu-22.04
     timeout-minutes: 5
     outputs:
@@ -48,7 +47,7 @@ jobs:
   build:
     name: Create KubeArmor latest release
     needs: [check]
-    if: github.repository == 'kubearmor/kubearmor' && (needs.check.outputs.kubearmor == 'true' || ${{ github.ref }} != 'refs/heads/main')
+    if: (needs.check.outputs.kubearmor == 'true' || ${{ github.ref }} != 'refs/heads/main')
     runs-on: oracle-vm-16cpu-64gb-x86-64
     permissions:
       contents: write
