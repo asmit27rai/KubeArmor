@@ -6,6 +6,8 @@ on:
     types:
       - completed
 
+permissions: read-all
+
 jobs:
   merge-coverage-files:
     name: Download and merge files
