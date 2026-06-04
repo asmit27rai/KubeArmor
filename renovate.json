@@ -6,8 +6,20 @@
   "constraints": {
     "go": "1.22"
   },
-  "postUpdateOptions": ["gomodTidy"],
-  "ignorePresets": [":prHourlyLimit2"],
-	"reviewers": ["team:maintainers"]
-
+  "postUpdateOptions": [
+    "gomodTidy"
+  ],
+  "ignorePresets": [
+    ":prHourlyLimit2"
+  ],
+  "reviewers": [
+    "team:maintainers"
+  ],
+  "labels": [
+    "dependencies",
+    "security"
+  ],
+  "rangeStrategy": "auto",
+  "prConcurrentLimit": 10,
+  "dependencyDashboard": true
 }
