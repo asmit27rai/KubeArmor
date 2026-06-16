@@ -12,7 +12,7 @@ permissions: read-all
 jobs:
   push-stable-version:
     name: Create KubeArmor stable release
-    if: github.repository == 'asmit27rai/kubearmor'
+    if: github.repository == 'kubearmor/kubearmor'
     runs-on: ubuntu-22.04
     timeout-minutes: 60
     permissions:
@@ -59,7 +59,7 @@ jobs:
 
   update-helm-chart:
     name: Update KubeArmor Helm chart version
-    if: github.repository == 'asmit27rai/kubearmor'
+    if: github.repository == 'kubearmor/kubearmor'
     runs-on: ubuntu-22.04
     timeout-minutes: 20
     permissions:
