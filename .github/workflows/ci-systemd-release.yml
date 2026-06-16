@@ -29,8 +29,7 @@ jobs:
       id-token: write
       contents: write
     outputs:
-      amd64-checksums-sha256: ${{ steps.compute-hash.outputs.amd64_hash }}
-      arm64-checksums-sha256: ${{ steps.compute-hash.outputs.arm64_hash }}
+      checksums-sha256: ${{ steps.compute-hash.outputs.hash }}
       release-tag: ${{ steps.vars.outputs.GORELEASER_CURRENT_TAG }}
     steps:
       - name: Validate version
@@ -147,8 +146,7 @@ jobs:
         working-directory: KubeArmor/dist
         run: |
           CHECKSUM_FILE="kubearmor_${{ steps.vars.outputs.tag }}_${{ matrix.arch }}_checksums.txt"
-          echo "amd64_hash=$([ '${{ matrix.arch }}' = 'amd64' ] && sha256sum ${CHECKSUM_FILE} | base64 -w0 || echo '')" >> $GITHUB_OUTPUT
-          echo "arm64_hash=$([ '${{ matrix.arch }}' = 'arm64' ] && sha256sum ${CHECKSUM_FILE} | base64 -w0 || echo '')" >> $GITHUB_OUTPUT
+          echo "hash=$(sha256sum ${CHECKSUM_FILE} | base64 -w0)" >> $GITHUB_OUTPUT
 
       - name: Setup ORAS
         uses: oras-project/setup-oras@v1
@@ -169,8 +167,6 @@ jobs:
       contents: write
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.0.0
     with:
-      base64-subjects: |
-        ${{ needs.goreleaser.outputs.amd64-checksums-sha256 }}
-        ${{ needs.goreleaser.outputs.arm64-checksums-sha256 }}
+      base64-subjects: "${{ needs.goreleaser.outputs.checksums-sha256 }}"
       upload-assets: true
       upload-tag-name: ${{ needs.goreleaser.outputs.release-tag }}
