@@ -6,6 +6,8 @@ on:
     types:
       - completed
 
+permissions: read-all
+
 jobs:
   merge-coverage-files:
     name: Download and merge files
@@ -47,10 +49,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
-          
+
       - uses: actions/setup-go@v5
         with:
-          go-version-file: 'KubeArmor/go.mod'
+          go-version-file: "KubeArmor/go.mod"
 
       - name: Download k8s coverage files from ci-test-ginkgo
         if: ${{ env.ci-test-ginkgo_status == 'success' }}
