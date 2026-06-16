@@ -29,8 +29,8 @@ jobs:
       id-token: write
       contents: write
     outputs:
-      amd64-checksums-sha256: ${{ steps.compute-hash.outputs.hash }}
-      arm64-checksums-sha256: ${{ steps.compute-hash.outputs.hash }}
+      amd64-checksums-sha256: ${{ steps.compute-hash.outputs.amd64_hash }}
+      arm64-checksums-sha256: ${{ steps.compute-hash.outputs.arm64_hash }}
       release-tag: ${{ steps.vars.outputs.GORELEASER_CURRENT_TAG }}
     steps:
       - name: Validate version
@@ -120,13 +120,6 @@ jobs:
           ARCH: ${{ matrix.arch }}
           COSIGN_YES: "true"
 
-      - name: Compute checksums hash for provenance
-        id: compute-hash
-        working-directory: KubeArmor/dist
-        run: |
-          CHECKSUM_FILE="kubearmor_${{ steps.vars.outputs.tag }}_${{ matrix.arch }}_checksums.txt"
-          echo "hash=$(sha256sum ${CHECKSUM_FILE} | base64 -w0)" >> $GITHUB_OUTPUT
-
       - name: Sign release artifacts with cosign
         working-directory: KubeArmor/dist
         env:
@@ -148,6 +141,14 @@ jobs:
             *.sig \
             *.pem \
             --clobber
+
+      - name: Compute checksums hash for provenance
+        id: compute-hash
+        working-directory: KubeArmor/dist
+        run: |
+          CHECKSUM_FILE="kubearmor_${{ steps.vars.outputs.tag }}_${{ matrix.arch }}_checksums.txt"
+          echo "amd64_hash=$([ '${{ matrix.arch }}' = 'amd64' ] && sha256sum ${CHECKSUM_FILE} | base64 -w0 || echo '')" >> $GITHUB_OUTPUT
+          echo "arm64_hash=$([ '${{ matrix.arch }}' = 'arm64' ] && sha256sum ${CHECKSUM_FILE} | base64 -w0 || echo '')" >> $GITHUB_OUTPUT
 
       - name: Setup ORAS
         uses: oras-project/setup-oras@v1
