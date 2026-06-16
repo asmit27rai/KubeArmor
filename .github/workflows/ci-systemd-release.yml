@@ -127,7 +127,7 @@ jobs:
           echo "hash=$(sha256sum ${CHECKSUM_FILE} | base64 -w0)" >> $GITHUB_OUTPUT
 
       - name: Setup ORAS
-        uses: oras-project/setup-oras@ca22c6c809b8c8d4d6f47e08f0e96a2a4d98571c
+        uses: oras-project/setup-oras@v1
         with:
           version: 1.0.0
 
