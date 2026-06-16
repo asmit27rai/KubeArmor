@@ -127,6 +127,28 @@ jobs:
           CHECKSUM_FILE="kubearmor_${{ steps.vars.outputs.tag }}_${{ matrix.arch }}_checksums.txt"
           echo "hash=$(sha256sum ${CHECKSUM_FILE} | base64 -w0)" >> $GITHUB_OUTPUT
 
+      - name: Sign release artifacts with cosign
+        working-directory: KubeArmor/dist
+        env:
+          COSIGN_YES: "true"
+        run: |
+          for f in *.tar.gz *.deb *.rpm *.txt; do
+            cosign sign-blob "$f" \
+              --bundle "${f}.sigstore.json" \
+              --output-signature "${f}.sig" \
+              --output-certificate "${f}.pem"
+          done
+
+      - name: Upload .sig and .pem to GitHub release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        working-directory: KubeArmor/dist
+        run: |
+          gh release upload "${{ steps.vars.outputs.GORELEASER_CURRENT_TAG }}" \
+            *.sig \
+            *.pem \
+            --clobber
+
       - name: Setup ORAS
         uses: oras-project/setup-oras@v1
         with:
