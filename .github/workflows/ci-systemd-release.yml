@@ -79,6 +79,7 @@ jobs:
         working-directory: KubeArmor/BPF
 
       - name: Log in to Docker Hub
+        if: false
         uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -132,6 +133,7 @@ jobs:
           version: 1.0.0
 
       - name: Publish release artifacts to Dockerhub
+        if: false
         working-directory: KubeArmor/dist
         run: |
           oras push docker.io/kubearmor/kubearmor-systemd:${{ steps.vars.outputs.tag }}_linux-${{ matrix.arch }} kubearmor_${{ steps.vars.outputs.tag }}_linux-${{ matrix.arch }}.tar.gz
