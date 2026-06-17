@@ -2,7 +2,7 @@
 # Copyright 2026 Authors of KubeArmor
 
 
-FROM alpine:3.22 AS kubearmor-init
+FROM alpine:3.22@sha256:310c62b5e7ca5b08167e4384c68db0fd2905dd9c7493756d356e893909057601 AS kubearmor-init
 
 RUN apk --no-cache update
 
@@ -18,7 +18,7 @@ COPY ./KubeArmor/build/compile.sh /KubeArmor/compile.sh
 ENTRYPOINT ["/KubeArmor/compile.sh"]
 
 ### Make compiler image
-FROM redhat/ubi10-minimal AS kubearmor-init-ubi
+FROM redhat/ubi10-minimal@sha256:76c113359a458e3f04057762b5bd4a9837a6987520434dea158c728280116713 AS kubearmor-init-ubi
 
 ARG VERSION=latest
 

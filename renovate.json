@@ -6,8 +6,15 @@
   "constraints": {
     "go": "1.22"
   },
-  "postUpdateOptions": ["gomodTidy"],
-  "ignorePresets": [":prHourlyLimit2"],
-	"reviewers": ["team:maintainers"]
-
+  "postUpdateOptions": [
+    "gomodTidy"
+  ],
+  "ignorePresets": [
+    ":prHourlyLimit2"
+  ],
+  "reviewers": [
+    "team:maintainers"
+  ],
+  "pinDigests": true,
+  "osvVulnerabilityAlerts": true
 }
