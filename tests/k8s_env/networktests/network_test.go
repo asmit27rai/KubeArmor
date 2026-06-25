@@ -281,7 +281,7 @@ var _ = Describe("Network Tests", func() {
 				}
 
 				// Apply Policy
-				err := K8sApplyFile("res/ksp-ubuntu-1-block-dns-subdomain.yaml")
+				err := K8sApplyFile("res/ksp-ubuntu-1-block-dns.yaml")
 				Expect(err).To(BeNil())
 
 				// Start KubeArmor Logs
@@ -299,7 +299,7 @@ var _ = Describe("Network Tests", func() {
 				)
 
 				expect := protobuf.Alert{
-					PolicyName: "block-dns-query-to-google-subdomains",
+					PolicyName: "block-dns-query-to-google",
 					Severity:   "10",
 					Action:     "Block",
 					Result:     "Permission denied",

@@ -834,23 +834,28 @@ ringbuf:
   return retval;
 }
 
-static __noinline struct data_t* match_domain_subdomain(u32 *inner, bufs_k *p ,bufs_k *z, bufs_k *scratch_pad){
+static __noinline struct data_t *match_domain_subdomain(u32 *inner, bufs_k *p, bufs_k *z, bufs_k *scratch_pad)
+{
   struct data_t *val = NULL;
-  int nested = 0, idx = 0;
+  u8 nested = 0, idx = 0;
   bpf_probe_read_str(scratch_pad->path, MAX_STRING_SIZE, p->path);
 
   val = bpf_map_lookup_elem(inner, p);
-  if(val){
+  if (val)
+  {
     return val;
   }
 
-  #pragma unroll
-  for (; nested < MAX_NESTED_DNS_LABELS ; nested++){
-    if (idx < 0 || idx >= MAX_STRING_SIZE)
+#pragma unroll 20
+  for (; nested < MAX_NESTED_DNS_LABELS; nested++)
+  {
+    if (idx < 0 || idx >= MAX_DNS_LABEL_LEN)
       goto match;
-    for(; idx < MAX_STRING_SIZE - 2 && scratch_pad->path[idx] != '.' && scratch_pad->path[idx] !='\0'; idx ++){
+    for (; idx < MAX_DNS_LABEL_LEN - 2 && scratch_pad->path[idx] != '.' && scratch_pad->path[idx] != '\0'; idx++)
+    {
     }
-    if (scratch_pad->path[idx] == '\0'){
+    if (scratch_pad->path[idx] == '\0')
+    {
       goto match;
     }
     idx++;
@@ -863,9 +868,10 @@ static __noinline struct data_t* match_domain_subdomain(u32 *inner, bufs_k *p ,b
 
     bpf_probe_read(p->path, MAX_STRING_SIZE, z->path);
     bpf_probe_read_str(p->path, MAX_STRING_SIZE, scratch_pad->path + idx);
-    
+
     val = bpf_map_lookup_elem(inner, p);
-    if(val){
+    if (val)
+    {
       goto match;
     }
   }
@@ -913,7 +919,6 @@ static inline int match_dns_rules(char *dns_name, u32 eventID)
     return 0;
 
   bpf_map_update_elem(&bufk, &one, z, BPF_ANY);
-  bpf_map_update_elem(&bufk, &three, z, BPF_ANY);
 
   bpf_probe_read_str(p->path, MAX_STRING_SIZE, dns_name);
 
@@ -951,7 +956,7 @@ static inline int match_dns_rules(char *dns_name, u32 eventID)
     bpf_probe_read_str(p->source, MAX_STRING_SIZE, src_ptr);
     bpf_probe_read_str(store->source, MAX_STRING_SIZE, p->source);
 
-    val = match_domain_subdomain(inner, p,  z, scratch_pad);
+    val = match_domain_subdomain(inner, p, z, scratch_pad);
     if (val)
     {
       match = true;
