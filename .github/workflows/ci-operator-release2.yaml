@@ -74,8 +74,10 @@ jobs:
             KubeArmor/BPF/vmlinux.h
             KubeArmor/enforcer/bpflsm/enforcer_bpfel.o
             KubeArmor/enforcer/bpflsm/enforcer_bpfeb.o
-            KubeArmor/monitor/monitor_bpfel.o
-            KubeArmor/monitor/monitor_bpfeb.o
+            KubeArmor/enforcer/bpflsm/enforcer_path_bpfel.o
+            KubeArmor/enforcer/bpflsm/enforcer_path_bpfeb.o
+            KubeArmor/monitor/ima_hash_bpfel.o
+            KubeArmor/monitor/ima_hash_bpfeb.o
             KubeArmor/presets/anonmapexec/anonmapexec_bpfel.o
             KubeArmor/presets/anonmapexec/anonmapexec_bpfeb.o
             KubeArmor/presets/exec/exec_bpfel.o
