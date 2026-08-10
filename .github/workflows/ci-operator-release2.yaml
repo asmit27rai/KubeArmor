@@ -67,6 +67,19 @@ jobs:
         run: go generate ./...
         working-directory: KubeArmor
 
+      - name: Verify generated BPF object files
+        run: |
+          ls -lh KubeArmor/utils/bpflsmprobe/probe_bpfel.o
+          ls -lh KubeArmor/utils/bpflsmprobe/probe_bpfeb.o
+          test -s KubeArmor/utils/bpflsmprobe/probe_bpfel.o
+          test -s KubeArmor/utils/bpflsmprobe/probe_bpfeb.o
+
+      - name: Verify Docker context includes generated probe objects
+        run: |
+          tar --exclude-vcs -cf /tmp/operator-context.tar .
+          tar -tf /tmp/operator-context.tar | grep 'KubeArmor/utils/bpflsmprobe/probe_bpfel.o'
+          tar -tf /tmp/operator-context.tar | grep 'KubeArmor/utils/bpflsmprobe/probe_bpfeb.o'
+
       - name: Build KubeArmor Operator Images
         working-directory: ./pkg/KubeArmorOperator
         run: PLATFORM=$PLATFORM make docker-buildx TAG=${{ steps.vars.outputs.tag }} BUILD_MODE=--load
