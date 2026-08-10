@@ -38,7 +38,7 @@ jobs:
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
         with:
           script: |
-            let tag = context.payload.inputs.tag;
+            let tag = context.payload.inputs?.tag;
             if (tag && tag.trim().length > 0) {
               await exec.exec('git', ['fetch', '--tags']);
               core.info(`Checking out ref: ${tag}`);
