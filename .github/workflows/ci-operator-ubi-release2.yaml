@@ -69,10 +69,30 @@ jobs:
 
       - name: Verify generated BPF object files
         run: |
-          ls -lh KubeArmor/utils/bpflsmprobe/probe_bpfel.o
-          ls -lh KubeArmor/utils/bpflsmprobe/probe_bpfeb.o
-          test -s KubeArmor/utils/bpflsmprobe/probe_bpfel.o
-          test -s KubeArmor/utils/bpflsmprobe/probe_bpfeb.o
+          set -euo pipefail
+          files=(
+            KubeArmor/BPF/vmlinux.h
+            KubeArmor/enforcer/bpflsm/enforcer_bpfel.o
+            KubeArmor/enforcer/bpflsm/enforcer_bpfeb.o
+            KubeArmor/monitor/monitor_bpfel.o
+            KubeArmor/monitor/monitor_bpfeb.o
+            KubeArmor/presets/anonmapexec/anonmapexec_bpfel.o
+            KubeArmor/presets/anonmapexec/anonmapexec_bpfeb.o
+            KubeArmor/presets/exec/exec_bpfel.o
+            KubeArmor/presets/exec/exec_bpfeb.o
+            KubeArmor/presets/filelessexec/filelessexec_bpfel.o
+            KubeArmor/presets/filelessexec/filelessexec_bpfeb.o
+            KubeArmor/presets/protectenv/protectenv_bpfel.o
+            KubeArmor/presets/protectenv/protectenv_bpfeb.o
+            KubeArmor/presets/protectproc/protectproc_bpfel.o
+            KubeArmor/presets/protectproc/protectproc_bpfeb.o
+            KubeArmor/utils/bpflsmprobe/probe_bpfel.o
+            KubeArmor/utils/bpflsmprobe/probe_bpfeb.o
+          )
+          for f in "${files[@]}"; do
+            ls -lh "$f"
+            test -s "$f"
+          done
 
       - name: Verify Docker context includes generated probe objects
         run: |
