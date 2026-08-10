@@ -1,6 +1,9 @@
 name: ci-release-operator-fork-test
 
 on:
+  push:
+    branches:
+      - binary-artifacts-release-test
   workflow_dispatch:
     inputs:
       tag:
