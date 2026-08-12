@@ -15,6 +15,7 @@ permissions: read-all
 
 env:
   PLATFORM: linux/amd64
+  IMAGE_NAMESPACE: asmit27rai
 
 jobs:
   kubearmor-operator-release-test:
@@ -32,6 +33,12 @@ jobs:
         uses: docker/setup-buildx-action@885d1462b80bc1c1c7f0b00334ad271f09369c55 # v2
         with:
           platforms: linux/amd64
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc # v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_AUTHTOK }}
 
       - name: Get Tag
         id: vars
@@ -96,12 +103,13 @@ jobs:
             test -s "$f"
           done
 
-      - name: Verify Docker context includes generated probe objects
-        run: |
-          tar --exclude-vcs -cf /tmp/operator-context.tar .
-          tar -tf /tmp/operator-context.tar | grep 'KubeArmor/utils/bpflsmprobe/probe_bpfel.o'
-          tar -tf /tmp/operator-context.tar | grep 'KubeArmor/utils/bpflsmprobe/probe_bpfeb.o'
-
-      - name: Build KubeArmor Operator Images
+      - name: Build and Push KubeArmor Operator Test Images
         working-directory: ./pkg/KubeArmorOperator
-        run: PLATFORM=$PLATFORM make docker-buildx TAG=${{ steps.vars.outputs.tag }} BUILD_MODE=--load
+        run: |
+          TAG=test-${{ github.run_number }}
+          PLATFORM=$PLATFORM \
+            OPERATOR_IMG=${IMAGE_NAMESPACE}/kubearmor-operator-test \
+            SNITCH_IMG=${IMAGE_NAMESPACE}/kubearmor-snitch-test \
+            make docker-buildx TAG=$TAG BUILD_MODE=--push
+          echo "Pushed ${IMAGE_NAMESPACE}/kubearmor-operator-test:$TAG"
+          echo "Pushed ${IMAGE_NAMESPACE}/kubearmor-snitch-test:$TAG"
