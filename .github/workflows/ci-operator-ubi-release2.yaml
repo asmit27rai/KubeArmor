@@ -15,7 +15,7 @@ permissions: read-all
 
 env:
   PLATFORM: linux/amd64
-  IMAGE_NAMESPACE: asmit27rai
+  IMAGE_NAMESPACE: asmitk1927
 
 jobs:
   kubearmor-operator-ubi-release-test:
