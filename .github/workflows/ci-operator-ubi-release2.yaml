@@ -108,8 +108,8 @@ jobs:
         run: |
           TAG=test-${{ github.run_number }}
           PLATFORM=$PLATFORM \
-            OPERATOR_IMG=${IMAGE_NAMESPACE}/kubearmor-operator-ubi-test \
-            SNITCH_IMG=${IMAGE_NAMESPACE}/kubearmor-snitch-ubi-test \
+            OPERATOR_IMG=${IMAGE_NAMESPACE}/kubearmor-operator-test \
+            SNITCH_IMG=${IMAGE_NAMESPACE}/kubearmor-snitch-test \
             make docker-buildx-ubi TAG=$TAG BUILD_MODE=--push
-          echo "Pushed ${IMAGE_NAMESPACE}/kubearmor-operator-ubi-test:$TAG"
-          echo "Pushed ${IMAGE_NAMESPACE}/kubearmor-snitch-ubi-test:$TAG"
+          echo "Pushed ${IMAGE_NAMESPACE}/kubearmor-operator-test-ubi:$TAG"
+          echo "Pushed ${IMAGE_NAMESPACE}/kubearmor-snitch-test-ubi:$TAG"
