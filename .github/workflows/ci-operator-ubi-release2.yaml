@@ -103,6 +103,16 @@ jobs:
             test -s "$f"
           done
 
+      - name: Build and Push KubeArmor UBI Test Images
+        run: |
+          TAG=test-${{ github.run_number }}
+          REPO=${IMAGE_NAMESPACE}/kubearmor-test \
+            PLATFORMS=$PLATFORM \
+            GITHUB_SHA=${GITHUB_SHA} \
+            ./KubeArmor/build/push_kubearmor_ubi.sh $TAG --push
+          echo "Pushed ${IMAGE_NAMESPACE}/kubearmor-test-ubi:$TAG"
+          echo "Pushed ${IMAGE_NAMESPACE}/kubearmor-test-init-ubi:$TAG"
+
       - name: Build and Push KubeArmor Operator UBI Test Images
         working-directory: ./pkg/KubeArmorOperator
         run: |
