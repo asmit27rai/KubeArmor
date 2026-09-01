@@ -6,10 +6,12 @@ on:
       tag:
         description: "Release tag which has to be updated"
         type: "string"
-        required: true
+        required: false
+        default: "v1.7.0"
   push:
-    tags:
-      - "*"
+    branches:
+      - "test/*"
+      - "fix/*"
 
 # Declare default permissions as read only.
 permissions: read-all
@@ -22,9 +24,6 @@ jobs:
         include:
           - arch: amd64
             os: ubuntu-22.04
-          - arch: arm64
-            os: ubuntu-22.04-arm
-    if: github.repository == 'kubearmor/kubearmor'
     permissions:
       id-token: write
       contents: write
@@ -37,19 +36,12 @@ jobs:
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
         with:
           script: |
-            const Regex = /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
             const eventName = '${{ github.event_name }}';
-            let version;
-            if (eventName === 'push') {
+            let version = '${{ inputs.tag }}' || 'v1.7.0';
+            if (eventName === 'push' && '${{ github.ref_name }}'.startsWith('v')) {
               version = '${{ github.ref_name }}';
-            } else {
-              version = '${{ inputs.tag }}';
             }
-            if (!Regex.test(version)) {
-              core.setFailed(`Invalid version format: ${version}`);
-            } else {
-              core.setOutput('release_tag', version);
-            }
+            core.setOutput('release_tag', version);
 
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -80,15 +72,12 @@ jobs:
           echo "GORELEASER_CURRENT_TAG=${RELEASE_TAG}" >> $GITHUB_OUTPUT
           echo "tag=${RELEASE_TAG#v}" >> $GITHUB_OUTPUT
           cp KubeArmor/.goreleaser.yaml /tmp/.goreleaser.yaml
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            git checkout "${RELEASE_TAG}"
-          fi
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_AUTHTOK }}
+      # - name: Log in to Docker Hub
+      #   uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
+      #   with:
+      #     username: ${{ secrets.DOCKER_USERNAME }}
+      #     password: ${{ secrets.DOCKER_AUTHTOK }}
 
       - name: Build KubeArmor object files
         run: |
@@ -113,7 +102,7 @@ jobs:
         with:
           distribution: goreleaser
           version: v1.25.0
-          args: release --config=/tmp/.goreleaser.yaml
+          args: release --config=/tmp/.goreleaser.yaml --snapshot --skip=publish
           workdir: KubeArmor
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
